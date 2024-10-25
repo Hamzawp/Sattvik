@@ -133,3 +133,26 @@ products = [
         ]
     }
 ]
+@app.route("/searchProduct",methods=['POST'])
+def searchProduct():
+    data = request.json()
+    if "text" not in data:
+        return jsonify({"error":"No product text is provided"}),400
+    
+    product_text = data['text']
+    
+    matched_products = []
+    
+    # Check if the product_text matches any attribute in any product
+    for product in products:
+        if (product_text in product['company_name'].lower() or 
+            product_text in product['product_name'].lower() or 
+            any(product_text in ingredient.lower() for ingredient in product['ingredients'])):
+            matched_products.append(product)
+    
+    # Return result if matches are found; otherwise return error
+    if matched_products:
+        return jsonify({"matched_products": matched_products}), 200
+    else:
+        return jsonify({"error": "No matching product found"}), 404
+  
