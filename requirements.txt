@@ -3,4 +3,6 @@ wikipedia
 openpyxl
 flask
 Pillow
-opencv-python
+opencv-python-headless
+ollama
+beautifulsoup4
