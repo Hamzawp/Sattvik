@@ -9,6 +9,7 @@ from flask import Flask, request, jsonify, send_file
 from bs4 import BeautifulSoup
 import ollama
 from PIL import Image, ImageDraw, ImageFont
+from Products import products
 
 app = Flask(__name__)
 
@@ -175,9 +176,10 @@ def scrape_amazon_product(url):
         price = soup.find('span', {'class': 'a-price-whole'}).get_text(strip=True)
         rating = soup.find('span', {'class': 'a-icon-alt'}).get_text(strip=True)
         description = soup.find('div', {'id': 'productDescription'}).get_text(strip=True)
-
+        
+        print(title)
         ingredients = get_ingredients(title, description)
-
+        print(ingredients)
         create_image(ingredients)
 
         return ingredients
@@ -228,7 +230,14 @@ def process_url():
 
     url = data["url"]
     ingredients =  scrape_amazon_product(url)
-    unsafe_ingredients = ImageProcessingExample.check_safety(ingredients)
+    # ingredients.append("Decyl glucoside")
+    unsafe_ingredients = []
+    for ingredient in ingredients:
+        unsafe_list = ImageProcessingExample.check_safety(ingredient)
+        unsafe_ingredients.extend(unsafe_list)
+        
+    unsafe_ingredients = list(set(unsafe_ingredients))
+
     if unsafe_ingredients:
         result_text = "The Product is Not Recommended due to UNSAFE Ingredients."
         definitions = {}
@@ -243,5 +252,29 @@ def process_url():
         result_text = "The Product is SAFE to Use. All Ingredients are Safe."
         return jsonify({"result": result_text, "unsafe_ingredients": {}})
 
+@app.route("/searchProduct",methods=["POST"])
+def searchProduct():
+    data = request.json
+    if "text" not in data:
+        return jsonify({"error":"No product text is provided"}),400
+    
+    product_text = data['text']
+    
+    matched_products = []
+    
+    # Check if the product_text matches any attribute in any product
+    # print(products)
+    for product in products:
+        if (product_text.lower() in product['company_name'].lower() or 
+            product_text.lower() in product['product_name'].lower() or 
+            any(product_text.lower() in ingredient.lower() for ingredient in product['ingredients'])):
+            matched_products.append(product)
+    
+    # Return result if matches are found; otherwise return error
+    if matched_products:
+        return jsonify({"matched_products": matched_products}), 200
+    else:
+        return jsonify({"error": "No matching product found"}), 400
+  
 if __name__ == "__main__":
     app.run(debug=True)
