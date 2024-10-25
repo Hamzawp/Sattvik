@@ -1,0 +1,6 @@
+pytesseract
+wikipedia
+openpyxl
+flask
+Pillow
+opencv-python
