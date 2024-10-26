@@ -9,7 +9,7 @@ export default function Layout() {
         headerShown: false,
       }}
     >
-      <Stack.Screen
+       <Stack.Screen
         name="(tabs)"
         options={{
           headerShown: false,
