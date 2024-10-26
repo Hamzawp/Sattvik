@@ -8,7 +8,7 @@ export default function Header() {
       style={{
         padding: 20,
         paddingTop: 40,
-        backgroundColor: "rgb(76 112 222)",
+        backgroundColor: "#45b3cb",
         // borderBottomLeftRadius: 50,
         // borderBottomRightRadius: 50,
       }}

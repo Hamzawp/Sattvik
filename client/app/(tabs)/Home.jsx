@@ -13,7 +13,7 @@ export default function Home() {
       <View style={styles.feature_container}>
         <View style={styles.feature_item}>
           <View style={styles.feature_img}>
-            <FontAwesome name="search" size={50} color="rgb(76 112 222)" />
+            <FontAwesome name="search" size={50} color="#45b3cb" />
           </View>
           <View>
             <Text>Feature 1</Text>
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   },
   feature_img: {
     borderWidth: 1,
-    borderColor: 'rgb(76 112 222)',
+    borderColor: '#45b3cb',
     padding: 10,
     width: 125,
     display: "flex",
