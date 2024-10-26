@@ -1,0 +1,5 @@
+http://127.0.0.1:5000/process-openimage
+http://127.0.0.1:5000/process-packedimage
+http://127.0.0.1:5000/conversation
+http://127.0.0.1:5000/process-url
+http://127.0.0.1:5000/searchProduct

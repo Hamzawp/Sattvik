@@ -1,0 +1,8 @@
+pytesseract
+wikipedia
+openpyxl
+flask
+Pillow
+opencv-python-headless
+ollama
+beautifulsoup4
