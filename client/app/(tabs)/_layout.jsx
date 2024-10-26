@@ -1,7 +1,7 @@
 import { View, Text } from "react-native";
 import React from "react";
 import { Tabs } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 
 export default function TabLayout() {
@@ -49,7 +49,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="searchByImg"
         options={{
-          tabBarLabel: "Search By Url",
+          tabBarLabel: "Import URL",
           tabBarIcon: ({ color }) => (
             <Ionicons name="link" size={24} color={color} />
           ),
@@ -58,9 +58,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="foodAlergy"
         options={{
-          tabBarLabel: "Food Alergy",
+          tabBarLabel: "Allergy Tracker",
           tabBarIcon: ({ color }) => (
-            <Ionicons name="link" size={24} color={color} />
+            <FontAwesome5 name="disease" size={24} color={color} />
           ),
         }}
       />

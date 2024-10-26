@@ -21,6 +21,7 @@ import bannerImage1 from "../../assets/images/banner1.jpeg";
 import bannerImage2 from "../../assets/images/banner2.jpg";
 import bannerImage3 from "../../assets/images/banner1.jpeg";
 import bannerImage4 from "../../assets/images/banner1.jpeg";
+import { Ionicons } from "@expo/vector-icons";
 
 const images = [
   {
@@ -44,43 +45,47 @@ const images = [
 const featureImages = [
   {
     id: "1",
-    uri: featureImage1, // Local image
+    uri: featureImage1,
+    title: "Scan Food"
   },
   {
     id: "2",
-    uri: featureImage2, // Local image
+    uri: featureImage2,
+    title: "Ingredient Analyzer"
   },
   {
     id: "3",
-    uri: featureImage3, // Local image
+    uri: featureImage3,
+    title: "Allergy Tracker"
   },
   {
     id: "4",
-    uri: featureImage4, // Local image
+    uri: featureImage4,
+    title: "Import URL"
   },
 ];
 
 const data = [
   {
     id: "1",
-    title: "Konsultasi",
-    subtitle: "89 dokter",
+    title: "Generate Report",
+    subtitle: "Nutrientation",
     color: "#4cb3d0",
-    icon: "stethoscope",
+    icon: "document",
   },
   {
     id: "2",
-    title: "Apotek",
-    subtitle: "6 Apotek terdekat",
+    title: "Crop Analyzer",
+    subtitle: "Farm report",
     color: "#f792a8",
     icon: "medkit",
   },
   {
     id: "3",
-    title: "Rumah Sakit",
-    subtitle: "6 RS terdekat",
+    title: "Voice Activated Assistant",
+    subtitle: "Multi-linguistic Approach",
     color: "#f4b266",
-    icon: "hospital-o",
+    icon: "mic-circle",
   },
 ];
 
@@ -138,7 +143,7 @@ export default function Home() {
                   source={item.uri} 
                 />
                 <View style={styles.overlayTextContainer}>
-                  <Text style={styles.overlayText}>Feature {item.id}</Text>
+                  <Text style={styles.overlayText}>{item.title}</Text>
                 </View>
               </TouchableOpacity>
             </Animated.View>
@@ -158,7 +163,7 @@ export default function Home() {
             >
               <TouchableOpacity style={styles.cardContent}>
                 {/* Adding FontAwesome icon */}
-                <FontAwesome
+                <Ionicons
                   name={item.icon}
                   size={30}
                   color="#fff"
@@ -257,7 +262,7 @@ const styles = StyleSheet.create({
   overlayTextContainer: {
     position: "absolute",
     bottom: 10,
-    left: "25%",
+    // left: "25%",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     paddingHorizontal: 5,
     paddingVertical: 2,
@@ -297,9 +302,11 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     marginBottom: 10,
+    textAlign: "center",
   },
   cardSubtitle: {
     fontSize: 14,
     color: "#fff",
+    textAlign: "center",
   },
 });

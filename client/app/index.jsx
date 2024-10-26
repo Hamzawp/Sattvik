@@ -11,7 +11,7 @@ export default function Index() {
       style={{
         marginTop: 20,
         backgroundColor: "#fff",
-        height: '100%',
+        height: "100%",
       }}
     >
       <View
@@ -29,7 +29,7 @@ export default function Index() {
             justifyContent: "space-between",
             alignItems: "center",
             marginHorizontal: 20,
-            marginVertical: 30
+            marginVertical: 30,
           }}
         >
           <Image
@@ -68,10 +68,12 @@ export default function Index() {
               color: "#45b3cb",
             }}
           >
-            Sattvik.
+            Sattvik
           </Text>
           <Image
-            source={getstarted}
+            source={{
+              uri: "https://img.freepik.com/premium-vector/food-choice-concept_118813-8480.jpg",
+            }}
             style={{
               width: 330,
               height: 275,
@@ -95,7 +97,7 @@ export default function Index() {
             marginBottom: 10,
           }}
         >
-          Your Best Allergy Assistant
+          Stay Healthy with Sattvik
         </Text>
         <Text
           style={{
@@ -103,22 +105,14 @@ export default function Index() {
             fontWeight: "400",
           }}
         >
-          Lorem ipsum dolor sit amet.
-        </Text>
-        <Text
-          style={{
-            fontSize: 15,
-            fontWeight: "400",
-          }}
-        >
-          Lorem, ipsum dolor.
+          Ensure purity in every bite with Sattvik.
         </Text>
       </View>
 
       <View
         style={{
           marginHorizontal: 20,
-          marginVertical: 30
+          marginVertical: 60,
         }}
       >
         <TouchableOpacity
