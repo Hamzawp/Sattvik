@@ -13,26 +13,31 @@ import Header from "../../components/Header";
 import FontAwesome from "react-native-vector-icons/FontAwesome"; 
 
 import featureImage1 from "../../assets/images/feature1.jpg";
-import featureImage2 from "../../assets/images/feature2.jpg";
+import featureImage2 from "../../assets/images/feature2.png";
 import featureImage3 from "../../assets/images/feature3.jpeg";
 import featureImage4 from "../../assets/images/feature4.jpg";
+
+import bannerImage1 from "../../assets/images/banner1.jpeg";
+import bannerImage2 from "../../assets/images/banner2.jpg";
+import bannerImage3 from "../../assets/images/banner1.jpeg";
+import bannerImage4 from "../../assets/images/banner1.jpeg";
 
 const images = [
   {
     id: "1",
-    uri: "https://canto-wp-media.s3.amazonaws.com/app/uploads/2019/09/19193806/file-upload-site-3.jpg",
+    uri: bannerImage2,
   },
   {
     id: "2",
-    uri: "https://canto-wp-media.s3.amazonaws.com/app/uploads/2019/09/19193806/file-upload-site-3.jpg",
+    uri: bannerImage1,
   },
   {
     id: "3",
-    uri: "https://canto-wp-media.s3.amazonaws.com/app/uploads/2019/09/19193806/file-upload-site-3.jpg",
+    uri: bannerImage3,
   },
   {
     id: "4",
-    uri: "https://canto-wp-media.s3.amazonaws.com/app/uploads/2019/09/19193806/file-upload-site-3.jpg",
+    uri: bannerImage4,
   },
 ];
 
@@ -96,7 +101,7 @@ export default function Home() {
             color: "#333",
           }}
         >
-          How you doin?{" "}
+          How you doing?{" "}
         </Text>
         <FlatList
           data={images}
@@ -107,7 +112,7 @@ export default function Home() {
             >
               <Image
                 style={styles.image_slider_image}
-                source={{ uri: item.uri }}
+                source={item.uri}
               />
             </Animated.View>
           )}
@@ -116,6 +121,29 @@ export default function Home() {
           showsHorizontalScrollIndicator={false}
           pagingEnabled
         />
+      </View>
+
+      <View style={styles.feature_cont}>
+        <Text style={styles.sectionTitle}>Features</Text>
+        <View style={styles.feature_container}>
+          {featureImages.map((item, index) => (
+            <Animated.View
+              key={item.id}
+              entering={ZoomIn.duration(800).delay(index * 300)}
+              style={styles.feature_item}
+            >
+              <TouchableOpacity style={styles.feature_img}>
+                <Image
+                  style={styles.feature_image}
+                  source={item.uri} 
+                />
+                <View style={styles.overlayTextContainer}>
+                  <Text style={styles.overlayText}>Feature {item.id}</Text>
+                </View>
+              </TouchableOpacity>
+            </Animated.View>
+          ))}
+        </View>
       </View>
 
       <View style={styles.container}>
@@ -147,32 +175,11 @@ export default function Home() {
           showsHorizontalScrollIndicator={false}
         />
       </View>
-
-      <View style={styles.feature_cont}>
-        <Text style={styles.sectionTitle}>Features</Text>
-        <View style={styles.feature_container}>
-          {featureImages.map((item, index) => (
-            <Animated.View
-              key={item.id}
-              entering={ZoomIn.duration(800).delay(index * 300)}
-              style={styles.feature_item}
-            >
-              <TouchableOpacity style={styles.feature_img}>
-                <Image
-                  style={styles.feature_image}
-                  source={item.uri} 
-                />
-                <View style={styles.overlayTextContainer}>
-                  <Text style={styles.overlayText}>Feature {item.id}</Text>
-                </View>
-              </TouchableOpacity>
-            </Animated.View>
-          ))}
-        </View>
-      </View>
     </ScrollView>
   );
 }
+
+
 
 const styles = StyleSheet.create({
   scrollContainer: {

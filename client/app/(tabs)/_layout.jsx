@@ -40,18 +40,27 @@ export default function TabLayout() {
       <Tabs.Screen
         name="UploadImg"
         options={{
-          tabBarLabel: "Category",
+          tabBarLabel: "Scan Food",
           tabBarIcon: ({ color }) => (
-            <Ionicons name="list" size={24} color={color} />
+            <Ionicons name="scan" size={24} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="productdetail"
+        name="searchByImg"
         options={{
-          tabBarLabel: "productdetail",
+          tabBarLabel: "Search By Url",
           tabBarIcon: ({ color }) => (
-            <Ionicons name="list" size={24} color={color} />
+            <Ionicons name="link" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="foodAlergy"
+        options={{
+          tabBarLabel: "Food Alergy",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="link" size={24} color={color} />
           ),
         }}
       />

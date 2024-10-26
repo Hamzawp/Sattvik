@@ -8,25 +8,27 @@ import {
   ActivityIndicator,
   Switch,
   Modal,
-  ToastAndroid,
+  ScrollView,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
 import Header from "../../components/Header";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { db, storage } from "../../configs/FirebaseConfig"; // Import Firebase Storage
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Import necessary functions
-import { doc, setDoc } from "firebase/firestore";
 
 export default function UploadImg() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [report, setReport] = useState(null);
-  const [isPacked, setIsPacked] = useState(true); // Toggle state
+  const [isPacked, setIsPacked] = useState(true);
   const [showTooltip, setShowTooltip] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
+  const [modalVisible, setModalVisible] = useState(false);
   const [response, setResponse] = useState(null);
   const [isAnalyzedClicked, setIsAnalyzeClicked] = useState(false);
+
+  const packedImageUrl =
+    "https://c8.alamy.com/comp/BBRP29/ingredients-list-from-lotion-showing-the-ingredient-ethylenediaminetetraacetic-BBRP29.jpg";
+  const looseImageUrl =
+    "https://assets.bonappetit.com/photos/58a37e2309ffa8f718634793/master/w_1600%2Cc_limit/tangelo-citrus.jpg";
 
   useEffect(() => {
     const checkFirstVisit = async () => {
@@ -39,104 +41,45 @@ export default function UploadImg() {
     checkFirstVisit();
   }, []);
 
-  const pickImage = async (source) => {
-    let result;
-    if (source === "library") {
-      const permissionResult =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!permissionResult.granted) {
-        alert("Permission to access the camera roll is required!");
-        return;
-      }
-      result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-      });
-    } else {
-      const permissionResult =
-        await ImagePicker.requestCameraPermissionsAsync();
-      if (!permissionResult.granted) {
-        alert("Permission to access the camera is required!");
-        return;
-      }
-      result = await ImagePicker.launchCameraAsync({
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-      });
-    }
-
-    // Check if the user cancelled the image selection
-    if (result.canceled) {
-      return;
-    }
-
-    setSelectedImage(result.assets[0].uri); // Set the selected image URI
-    uploadImage(result.assets[0].uri); // Call upload function
-  };
-  const saveProductDetail = async (imageUrl) => {
-    await setDoc(doc(db, "ProductList", Date.now().toString()), {
-      imageUrl: imageUrl,
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
     });
 
-    // setLoading(false);
-    ToastAndroid.show("New Product Added!", ToastAndroid.BOTTOM);
-  };
-
-  const uploadImage = async (uri) => {
-    try {
-        console.log("Uploading image from URI:", uri);
-
-        const response = await fetch(uri);
-        const blob = await response.blob();
-        console.log("res: ", response)
-        console.log("blob: ",blob);
-        const fileName = uri.split('/').pop(); // Define fileName here
-        console.log("FilenameL:", fileName)
-        const imageRef = ref(storage, "MumbaiHacks/" + fileName);
-        console.log("imageRef:", imageRef)
-
-        const snapshot = await uploadBytes(imageRef, blob);
-        console.log("File uploaded", snapshot);
-
-        const downloadUrl = await getDownloadURL(snapshot.ref);
-        console.log("File available at", downloadUrl);
-
-        await saveProductDetail(downloadUrl); // Save the product details with the download URL
-    } catch (error) {
-        console.error("Upload failed:", error); // Log any errors
+    if (!result.cancelled) {
+      setSelectedImage(result.uri);
+      setResponse(null); // Clear previous response when a new image is selected
     }
-};
-
-
-
-  const removeImage = () => {
-    setSelectedImage(null);
-    setIsLoading(false);
-    setReport(null);
   };
 
   const analyzeImage = () => {
     setIsAnalyzeClicked(true);
     setIsLoading(true);
+
+    // Simulate analysis response
     setTimeout(() => {
       const mockReport = {
-        items: [
-          { name: "Pesticide Residue", quantity: "5 mg", safe: false },
-          { name: "Preservative E210", quantity: "2 mg", safe: true },
-          { name: "Artificial Dye E123", quantity: "3 mg", safe: false },
-        ],
-        conclusion: "This product is adulterated",
+        result: isPacked
+          ? "The Product is Not Recommended due to UNSAFE Ingredients."
+          : "The Product is 70% unadulterated.",
+        unsafe_ingredients: isPacked
+          ? {
+              "potassium sorbate":
+                "Potassium sorbate is the potassium salt of sorbic acid, chemical formula CH3CH=CH−CH=CH−CO2K. It is primarily used as a food preservative (E number 202).",
+              "sodium benzoate":
+                "Sodium benzoate is widely used as a food preservative (E211) and a pickling agent.",
+            }
+          : null,
       };
-      setReport(mockReport);
+      setResponse(mockReport);
       setIsLoading(false);
-    }, 3000); // Simulate loading time
+    }, 1000);
   };
 
   return (
-    <View>
+    <ScrollView style={styles.scrollContainer}>
       <Header />
       <View style={styles.uploadWindow}>
         <View style={styles.toggleContainer}>
@@ -145,7 +88,11 @@ export default function UploadImg() {
             <Text>{isPacked ? "Packed" : "Loose"}</Text>
             <Switch
               value={isPacked}
-              onValueChange={() => setIsPacked(!isPacked)}
+              onValueChange={() => {
+                setIsPacked(!isPacked);
+                setResponse(null); // Reset response on switch
+                setSelectedImage(null); // Clear selected image on switch
+              }}
               trackColor={{ false: "#ccc", true: "#45b3cb" }}
               thumbColor={isPacked ? "#fff" : "#fff"}
             />
@@ -166,50 +113,21 @@ export default function UploadImg() {
         </Text>
 
         <View style={styles.imageContainer}>
-          {selectedImage ? (
-            <>
-              <Image source={{ uri: selectedImage }} style={styles.image} />
-              <TouchableOpacity
-                style={styles.removeImageIcon}
-                onPress={removeImage}
-              >
-                <Ionicons name="close-circle" size={24} color="red" />
-              </TouchableOpacity>
-            </>
-          ) : (
-            <Text style={styles.placeholderText}>No Image Selected</Text>
-          )}
+          <Image
+            source={{
+              uri: selectedImage || (isPacked ? packedImageUrl : looseImageUrl),
+            }}
+            style={styles.image}
+          />
         </View>
 
-        {!selectedImage ? (
-          <View style={styles.buttonRow}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => {
-                pickImage("library");
-                setIsAnalyzeClicked(false);
-              }}
-            >
-              <Text style={styles.buttonText}>Choose Image</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => {
-                pickImage("camera");
-                setIsAnalyzeClicked(false);
-              }}
-            >
-              <Text style={styles.buttonText}>Use Camera</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <TouchableOpacity
-            style={styles.analyzeImageBtn}
-            onPress={analyzeImage}
-          >
-            <Text style={styles.buttonText}>Analyze Image</Text>
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity style={styles.uploadBtn} onPress={pickImage}>
+          <Text style={styles.buttonText}>Choose Image</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.analyzeImageBtn} onPress={analyzeImage}>
+          <Text style={styles.buttonText}>Analyze Image</Text>
+        </TouchableOpacity>
 
         {isLoading && (
           <ActivityIndicator
@@ -219,36 +137,34 @@ export default function UploadImg() {
           />
         )}
 
-        {response && response.status === 200 ? (
-          report && (
-            <View style={styles.reportContainer}>
-              <Text style={styles.reportHeading}>Product Report</Text>
-              {report.items.map((item, index) => (
-                <View key={index} style={styles.reportItem}>
-                  <Ionicons
-                    name={item.safe ? "checkmark-circle" : "alert-circle"}
-                    size={20}
-                    color={item.safe ? "green" : "red"}
-                    style={styles.bulletIcon}
-                  />
-                  <Text style={styles.reportText}>
-                    {item.name} - {item.quantity}
-                  </Text>
-                </View>
-              ))}
-              <Text style={styles.conclusionText}>{report.conclusion}</Text>
-            </View>
-          )
+        {response && response.result ? (
+          <View style={styles.reportContainer}>
+            <Text style={styles.reportHeading}>Product Report</Text>
+            {response.unsafe_ingredients &&
+              Object.entries(response.unsafe_ingredients).map(
+                ([name, description], index) => (
+                  <View key={index} style={styles.reportItem}>
+                    <Ionicons
+                      name="alert-circle"
+                      size={20}
+                      color="red"
+                      style={styles.bulletIcon}
+                    />
+                    <Text style={styles.reportText}>
+                      {name} - {description}
+                    </Text>
+                  </View>
+                )
+              )}
+            <Text style={styles.conclusionText}>{response.result}</Text>
+          </View>
         ) : (
-          isAnalyzedClicked && (
-            <View style={styles.notfoundContainer}>
-              <Text style={styles.notfound}>No Ingredients Found!</Text>
-            </View>
-          )
+          <View style={styles.notfoundContainer}>
+            <Text style={styles.notfound}>No Ingredients Found!</Text>
+          </View>
         )}
       </View>
 
-      {/* Modal for showing product type information */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -272,10 +188,17 @@ export default function UploadImg() {
           </View>
         </View>
       </Modal>
-    </View>
+    </ScrollView>
   );
 }
+
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flex: 1,
+    backgroundColor: "#fff",
+    marginBottom: 80,
+    backgroundColor: "#ecf2f3",
+  },
   uploadWindow: {
     padding: 20,
   },

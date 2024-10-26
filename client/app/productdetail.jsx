@@ -1,27 +1,21 @@
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import React from "react";
-import { useRouter } from "expo-router";
+import { useRoute } from "@react-navigation/native";
 import { Image } from "expo-image";
 import Anticons from "react-native-vector-icons/AntDesign";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { useRouter } from "expo-router";
 
 export default function productdetail() {
   const router = useRouter();
-
-  // Sample content to replace `item`
-  const sampleData = {
-    img: "https://www.quickpantry.in/cdn/shop/files/balaji-wafers-simply-salted-quick-pantry-2.png?v=1710538876&width=460", // Add your actual image URL
-    company_name: "Balaji Wafers",
-    fssai_approved: true,
-    product_name: "Balaji Wafers - Classic Salted",
-    ingredients: ["Potato", "Palm Oil", "Salt", "Antioxidant (INS 330)"],
-  };
+  const route = useRoute();
+  const { product } = route.params;
 
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
         <Image
-          source={{ uri: sampleData.img }}
+          source={{ uri: product.img }}
           contentFit="cover"
           style={styles.image}
         />
@@ -34,7 +28,6 @@ export default function productdetail() {
         <Anticons name="closecircle" size={36} color="#45b3cb" />
       </TouchableOpacity>
 
-      {/* details */}
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -44,14 +37,14 @@ export default function productdetail() {
           entering={FadeInDown.duration(300).springify()}
           style={styles.title}
         >
-          {sampleData.product_name}
+          {product.product_name}
         </Animated.Text>
 
         <Animated.Text
           entering={FadeInDown.delay(100).duration(300).springify()}
           style={styles.detailText}
         >
-          Company: <Text style={styles.boldText}>{sampleData.company_name}</Text>
+          Company: <Text style={styles.boldText}>{product.company_name}</Text>
         </Animated.Text>
 
         <Animated.Text
@@ -60,7 +53,7 @@ export default function productdetail() {
         >
           FSSAI Approved:{" "}
           <Text style={styles.boldText}>
-            {sampleData.fssai_approved ? "Yes" : "No"}
+            {product.fssai_approved ? "Yes" : "No"}
           </Text>
         </Animated.Text>
 
@@ -71,9 +64,11 @@ export default function productdetail() {
           Ingredients
         </Animated.Text>
 
-        {sampleData.ingredients.map((ingredient, index) => (
+        {product.ingredients.map((ingredient, index) => (
           <Animated.Text
-            entering={FadeInDown.delay((index + 5) * 100).duration(300).springify()}
+            entering={FadeInDown.delay((index + 5) * 100)
+              .duration(300)
+              .springify()}
             key={ingredient}
             style={styles.ingredientText}
           >

@@ -68,7 +68,7 @@ export default function Index() {
               color: "#45b3cb",
             }}
           >
-            HolaDok.
+            Sattvik.
           </Text>
           <Image
             source={getstarted}
@@ -103,7 +103,7 @@ export default function Index() {
             fontWeight: "400",
           }}
         >
-          Dapatkan layannan mdeis speical
+          Lorem ipsum dolor sit amet.
         </Text>
         <Text
           style={{
@@ -111,7 +111,7 @@ export default function Index() {
             fontWeight: "400",
           }}
         >
-          untuk kamum 24jan
+          Lorem, ipsum dolor.
         </Text>
       </View>
 
