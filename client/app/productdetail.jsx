@@ -6,7 +6,7 @@ import Anticons from "react-native-vector-icons/AntDesign";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useRouter } from "expo-router";
 
-export default function productdetail() {
+export default function ProductDetail() {
   const router = useRouter();
   const route = useRoute();
   const { product } = route.params || {};
@@ -25,7 +25,7 @@ export default function productdetail() {
     <View style={styles.container}>
       <View style={styles.imageContainer}>
         <Image
-          source={{ uri: product.img }}
+          source={{ uri: product.img }} // Ensure this property exists in your product data
           contentFit="cover"
           style={styles.image}
         />

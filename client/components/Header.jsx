@@ -1,51 +1,42 @@
-import { View, Text, Image, TextInput } from "react-native";
+import { View, Text, Image, TextInput, Alert } from "react-native";
 import React, { useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import logo from "../assets/images/logo.png";
 
-const products = [
-  {
-    company_name: "Balaji Wafers",
-    fssai_approved: true,
-    product_name: "Balaji Wafers - Classic Salted",
-    ingredients: ["Potato", "Palm Oil", "Salt", "Antioxidant (INS 330)"],
-    img: "https://www.quickpantry.in/cdn/shop/files/balaji-wafers-simply-salted-quick-pantry-2.png?v=1710538876&width=460",
-  },
-  {
-    company_name: "Pringles",
-    fssai_approved: true,
-    product_name: "Pringles Original",
-    ingredients: [
-      "Dehydrated Potatoes",
-      "Vegetable Oil",
-      "Rice Flour",
-      "Wheat Starch",
-      "Corn Flour",
-      "Salt",
-      "Maltodextrin",
-      "Emulsifier (E471)",
-    ],
-    img: "https://m.media-amazon.com/images/I/71GvH9QK08L.jpg",
-  },
-  // Add the remaining products with their images...
-];
-
 export default function Header() {
   const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState("");
 
-  const handleSearchSubmit = () => {
+  const handleSearchSubmit = async () => {
     if (searchQuery.trim()) {
-      const matchedProduct = products.find((product) =>
-        product.product_name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+      try {
+        const response = await fetch(
+          `http://10.0.2.2:5000/searchProduct`,
+          {
+            method: 'POST', 
+            headers: {
+              'Content-Type': 'application/json', 
+            },
+            body: JSON.stringify({ text: searchQuery }), // Send search query in JSON format
+          }
+        );
 
-      if (matchedProduct) {
-        navigation.navigate("productdetail", { product: matchedProduct });
-        setSearchQuery("");
-      } else {
-        alert("Product not found.");
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const data = await response.json();
+        console.log(data); // Check what is returned
+
+        if (data.matched_products && data.matched_products.length > 0) {
+          navigation.navigate("productdetail", { product: data.matched_products[0] });
+          setSearchQuery("");
+        } else {
+          Alert.alert("Product not found.");
+        }
+      } catch (error) {
+        Alert.alert("Error fetching data", error.message);
       }
     }
   };
@@ -97,16 +88,12 @@ export default function Header() {
           <TextInput
             placeholder="Search..."
             placeholderTextColor="black"
-            style={{ fontSize: 16, color: "#000", fontFamily: 'Montserrat' }}
+            style={{ fontSize: 16, color: "#000", fontFamily: "Montserrat" }}
             value={searchQuery}
             onChangeText={setSearchQuery}
             onSubmitEditing={handleSearchSubmit}
           />
         </View>
-
-        {/* <View>
-          <FontAwesome name="bars" size={28} color="#45b3cb" />
-        </View> */}
       </View>
     </View>
   );

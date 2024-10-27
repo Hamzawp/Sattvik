@@ -8,7 +8,8 @@ products = [
             "Palm Oil",
             "Salt",
             "Antioxidant (INS 330)"
-        ]
+        ],
+        "img": "https://uploads.commoninja.com/searchengine/wordpress/free-product-sample.png"
     },
     {
         "company_name": "Pringles",
@@ -23,7 +24,8 @@ products = [
             "Salt",
             "Maltodextrin",
             "Emulsifier (E471)"
-        ]
+        ],
+        "img": "https://uploads.commoninja.com/searchengine/wordpress/free-product-sample.png"
     },
     {
         "company_name": "Parle",
@@ -38,7 +40,8 @@ products = [
             "Salt",
             "Milk Solids",
             "Emulsifier (E322)"
-        ]
+        ],
+        "img": "https://uploads.commoninja.com/searchengine/wordpress/free-product-sample.png"
     },
     {
         "company_name": "Lays",
@@ -48,7 +51,8 @@ products = [
             "Potato",
             "Vegetable Oil",
             "Salt"
-        ]
+        ],
+        "img": "https://uploads.commoninja.com/searchengine/wordpress/free-product-sample.png"
     },
     {
         "company_name": "Amul",
@@ -58,7 +62,8 @@ products = [
             "Butter",
             "Salt",
             "Annatto (Color)"
-        ]
+        ],
+        "img": "https://uploads.commoninja.com/searchengine/wordpress/free-product-sample.png"
     },
     {
         "company_name": "Nestle",
@@ -75,7 +80,8 @@ products = [
             "Salt",
             "Raising Agent (E500)",
             "Natural Vanilla Flavoring"
-        ]
+        ],
+        "img": "https://uploads.commoninja.com/searchengine/wordpress/free-product-sample.png"
     },
     {
         "company_name": "Haldiram's",
@@ -90,7 +96,8 @@ products = [
             "Black Salt",
             "Citric Acid",
             "Mixed Spices"
-        ]
+        ],
+        "img": "https://uploads.commoninja.com/searchengine/wordpress/free-product-sample.png"
     },
     {
         "company_name": "Britannia",
@@ -105,7 +112,8 @@ products = [
             "Salt",
             "Milk Solids",
             "Emulsifiers (E322, E471)"
-        ]
+        ],
+        "img": "https://uploads.commoninja.com/searchengine/wordpress/free-product-sample.png"
     },
     {
         "company_name": "PepsiCo",
@@ -118,7 +126,8 @@ products = [
             "Caffeine",
             "Natural Flavoring Substances",
             "Caramel Color (E150d)"
-        ]
+        ],
+        "img": "https://uploads.commoninja.com/searchengine/wordpress/free-product-sample.png"
     },
     {
         "company_name": "Dabur",
@@ -130,6 +139,7 @@ products = [
             "Sugar",
             "Acidity Regulator (INS 330)",
             "Antioxidant (INS 300)"
-        ]
+        ],
+        "img": "https://uploads.commoninja.com/searchengine/wordpress/free-product-sample.png"
     }
 ]
