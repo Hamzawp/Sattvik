@@ -8,33 +8,59 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  ScrollView,
 } from "react-native";
 import Header from "../../components/Header";
 
 export default function FoodAllergy() {
   const [allergies, setAllergies] = useState("");
-  const ingredients = ["peanuts", "shellfish", "milk", "eggs"]; // Example ingredient list
 
-  const checkAllergies = () => {
+  const checkAllergies = async () => {
     const userAllergies = allergies
       .split(",")
       .map((allergy) => allergy.trim().toLowerCase());
-    const matchedAllergies = userAllergies.filter((allergy) =>
-      ingredients.includes(allergy)
-    );
 
-    if (matchedAllergies.length > 0) {
+    try {
+      const response = await fetch("http://10.0.2.2:5000/check_allergy", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ allergies: userAllergies }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+
+      // Check if any of the food products contains allergens
+      const unsafeProducts = data.filter((item) => !item.Safe);
+
+      if (unsafeProducts.length > 0) {
+        const allergens = unsafeProducts
+          .map((item) => item["Food Product"])
+          .join(", ");
+
+        Alert.alert(
+          "Warning!",
+          `The following food products are not safe for you: ${allergens}`
+        );
+      } else {
+        Alert.alert("Safe!", "All food products are safe for you.");
+      }
+    } catch (error) {
+      console.error("Error checking allergies:", error);
       Alert.alert(
-        "Warning!",
-        `This food is not safe for you due to: ${matchedAllergies.join(", ")}`
+        "Error!",
+        "There was an error checking your allergies. Please try again."
       );
-    } else {
-      Alert.alert("Safe!", "This food is safe for you.");
     }
   };
 
   return (
-    <View style={styles.scrollContainer}>
+    <ScrollView style={styles.scrollContainer}>
       <View>
         <Header />
       </View>
@@ -58,7 +84,7 @@ export default function FoodAllergy() {
           <Text style={styles.analyzeBtnText}>Check Allergies</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -113,6 +139,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 350,
     marginBottom: 30,
-    borderRadius: 8
+    borderRadius: 8,
   },
 });

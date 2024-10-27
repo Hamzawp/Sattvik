@@ -11,13 +11,14 @@ import ollama
 from PIL import Image, ImageDraw, ImageFont
 from Products import products
 from flask_cors import CORS
+import pandas as pd
 
 app = Flask(__name__)
 CORS(app)
 wb = openpyxl.load_workbook("harmful-ingriedents/harmful_ingredients.xlsx")
 sheet = wb.active
-
-
+allergyData = pd.read_csv('food_ingredients_and_allergens.csv')
+allergyData.columns = allergyData.columns.str.strip()
 class ImageProcessingExample:
     def fetch_wikipedia_definition(ingredient):
         try:
@@ -297,6 +298,34 @@ def searchProduct():
         return jsonify({"matched_products": matched_products}), 200
     else:
         return jsonify({"error": "No matching product found"}), 400
+
+
+# Endpoint to check allergies
+@app.route('/check_allergy', methods=['POST'])
+# Endpoint to check allergies
+@app.route('/check_allergy', methods=['POST'])
+def check_allergy():
+    user_allergies = request.json.get("allergies", [])
+    
+    # Prepare a response for each food product
+    response = []
+    for _, row in allergyData.iterrows():
+        allergens = row['Allergens']
+        
+        # Ensure allergens is a string and handle NaN values
+        if isinstance(allergens, str):
+            allergens = allergens.split(", ")
+        else:
+            allergens = []  # Set to empty list if not a string
+        
+        contains_allergen = any(allergy.strip() in allergens for allergy in user_allergies)
+        
+        response.append({
+            "Food Product": row['Food Product'],  # Corrected column name
+            "Safe": not contains_allergen
+        })
+    
+    return jsonify(response)
 
 
 if __name__ == "__main__":
