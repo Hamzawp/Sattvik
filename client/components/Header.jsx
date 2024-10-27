@@ -2,9 +2,8 @@ import { View, Text, Image, TextInput } from "react-native";
 import React, { useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import logo from "../assets/images/logo.jpg";
+import logo from "../assets/images/logo.png";
 
-// Import the products array with the img field added
 const products = [
   {
     company_name: "Balaji Wafers",
@@ -38,14 +37,13 @@ export default function Header() {
 
   const handleSearchSubmit = () => {
     if (searchQuery.trim()) {
-      // Find the product that matches the search query
       const matchedProduct = products.find((product) =>
         product.product_name.toLowerCase().includes(searchQuery.toLowerCase())
       );
 
       if (matchedProduct) {
         navigation.navigate("productdetail", { product: matchedProduct });
-        setSearchQuery(""); // Clear the search input if desired
+        setSearchQuery("");
       } else {
         alert("Product not found.");
       }
@@ -73,7 +71,7 @@ export default function Header() {
         >
           <Image
             source={logo}
-            style={{ width: 45, height: 45, borderRadius: 10 }}
+            style={{ width: 55, height: 55, borderRadius: 10 }}
           />
         </View>
 
@@ -85,25 +83,30 @@ export default function Header() {
             gap: 10,
             paddingVertical: 10,
             paddingHorizontal: 20,
-            backgroundColor: "#ebebeb",
+            backgroundColor: "#ecf2f3",
             borderRadius: 16,
-            width: "70%",
+            width: "80%",
           }}
         >
-          <FontAwesome name="search" size={24} color="#000" />
+          <FontAwesome
+            name="search"
+            size={24}
+            color="#45b3cb"
+            style={{ fontFamily: "Montserrat" }}
+          />
           <TextInput
             placeholder="Search..."
             placeholderTextColor="black"
-            style={{ fontSize: 16, color: "#000" }}
+            style={{ fontSize: 16, color: "#000", fontFamily: 'Montserrat' }}
             value={searchQuery}
             onChangeText={setSearchQuery}
             onSubmitEditing={handleSearchSubmit}
           />
         </View>
 
-        <View>
-          <FontAwesome name="bars" size={28} color="#000" />
-        </View>
+        {/* <View>
+          <FontAwesome name="bars" size={28} color="#45b3cb" />
+        </View> */}
       </View>
     </View>
   );

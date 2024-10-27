@@ -209,9 +209,9 @@ const styles = StyleSheet.create({
     borderColor: "red",
     borderRadius: 10,
     height: 250,
-    width: "100%", // Optional: Set a width for the notfound container
-    justifyContent: "center", // Center text vertically
-    alignItems: "center", // Center text horizontally
+    width: "100%", 
+    justifyContent: "center", 
+    alignItems: "center", 
   },
   notfound: {
     color: "red",
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     textTransform: "uppercase",
     letterSpacing: 2,
-    fontWeight: "bold",
+    fontFamily: 'Montserrat-bold',
   },
   toggleContainer: {
     flexDirection: "row",
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontFamily: 'Montserrat-bold',
   },
   toggleBar: {
     flexDirection: "row",
@@ -237,6 +237,7 @@ const styles = StyleSheet.create({
   },
   tooltip: {
     fontSize: 12,
+    fontFamily: 'Montserrat',
     color: "#666",
     marginBottom: 10,
     backgroundColor: "#f0f0f0",
@@ -246,6 +247,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 14,
     marginBottom: 20,
+    fontFamily: 'Montserrat-medium',
   },
   imageContainer: {
     width: "100%",
@@ -272,6 +274,7 @@ const styles = StyleSheet.create({
   },
   placeholderText: {
     color: "#aaa",
+    fontFamily: 'Montserrat',
   },
   buttonRow: {
     flexDirection: "row",
@@ -297,36 +300,42 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: 'Montserrat-bold',
   },
   loadingGif: {
     marginVertical: 20,
   },
   reportContainer: {
     marginTop: 20,
-    padding: 10,
-    backgroundColor: "#f9f9f9",
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    backgroundColor: "#fff",
     borderRadius: 5,
   },
   reportHeading: {
     fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
+    fontFamily: 'Montserrat-bold',
+    marginBottom: 20,
   },
   reportItem: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
+    justifyContent: 'center',
     marginBottom: 5,
   },
   bulletIcon: {
-    marginRight: 5,
+    marginRight: 15,
   },
   reportText: {
     fontSize: 16,
+    fontFamily: 'Montserrat',
+    textAlign: 'justify',
+    width: '88%'
   },
   conclusionText: {
-    fontWeight: "bold",
-    marginTop: 10,
+    fontFamily: 'Montserrat-bold',
+    color: '#45b3cb',
+    marginTop: 20,
   },
   modalOverlay: {
     flex: 1,
@@ -336,6 +345,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: "white",
+    fontFamily: 'Montserrat',
     padding: 20,
     borderRadius: 10,
     width: "80%",
@@ -343,6 +353,7 @@ const styles = StyleSheet.create({
   modalText: {
     marginBottom: 15,
     textAlign: "center",
+    fontFamily: 'Montserrat',
   },
   closeModalButton: {
     backgroundColor: "#2196F3",

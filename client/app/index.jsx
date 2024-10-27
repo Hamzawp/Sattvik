@@ -1,7 +1,7 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import React from "react";
-import logo from "../assets/images/logo.jpg";
-import getstarted from "../assets/images/getstarted.jpg";
+import logo from "../assets/images/logo.png";
+import getstarted from "../assets/images/getstarted.png";
 import { useRouter } from "expo-router";
 
 export default function Index() {
@@ -35,8 +35,8 @@ export default function Index() {
           <Image
             source={logo}
             style={{
-              width: 50,
-              height: 50,
+              width: 60,
+              height: 60,
             }}
           />
 
@@ -44,7 +44,7 @@ export default function Index() {
             style={{
               color: "#45b3cb",
               fontSize: 18,
-              fontWeight: "500",
+              fontFamily: 'Montserrat-medium',
             }}
           >
             Skip
@@ -57,23 +57,23 @@ export default function Index() {
             justifyContent: "center",
             flexDirection: "column",
             alignItems: "center",
-            marginTop: 75,
+            marginTop: 60,
           }}
         >
           <Text
             style={{
-              fontSize: 30,
-              fontWeight: "600",
+              fontSize: 45,
+              fontFamily: 'Montserrat-bold',
               marginBottom: 20,
               color: "#45b3cb",
+              textTransform: 'uppercase',
+              letterSpacing: 2
             }}
           >
             Sattvik
           </Text>
           <Image
-            source={{
-              uri: "https://img.freepik.com/premium-vector/food-choice-concept_118813-8480.jpg",
-            }}
+            source={getstarted}
             style={{
               width: 330,
               height: 275,
@@ -93,7 +93,7 @@ export default function Index() {
         <Text
           style={{
             fontSize: 18,
-            fontWeight: "600",
+            fontFamily: 'Montserrat-bold',
             marginBottom: 10,
           }}
         >
@@ -102,7 +102,7 @@ export default function Index() {
         <Text
           style={{
             fontSize: 15,
-            fontWeight: "400",
+            fontFamily: 'Montserrat-medium',
           }}
         >
           Ensure purity in every bite with Sattvik.
@@ -129,7 +129,7 @@ export default function Index() {
             style={{
               textAlign: "center",
               color: "#fff",
-              fontWeight: 600,
+              fontFamily: 'Montserrat-bold',
               fontSize: 21,
             }}
           >

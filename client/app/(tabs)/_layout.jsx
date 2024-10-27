@@ -9,14 +9,11 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        // tabBarActiveTintColor: Colors.green,
+        tabBarActiveTintColor: "#4cb3d0",
         tabBarStyle: {
-          //   backgroundColor: Colors.GRAY,
-          borderRadius: 20,
-          position: "absolute",
-          // bottom: 10,
-          // left: 30,
-          // right: 30,
+          backgroundColor: "#ecf2f3",
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
           height: 75,
           paddingBottom: 10,
           paddingTop: 10,
@@ -39,6 +36,15 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="UploadImg"
+        options={{
+          tabBarLabel: "Ingredient Analyzer",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="analytics-outline" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="foodAdulteration"
         options={{
           tabBarLabel: "Scan Food",
           tabBarIcon: ({ color }) => (

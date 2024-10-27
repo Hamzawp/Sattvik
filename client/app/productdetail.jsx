@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
 import React from "react";
 import { useRoute } from "@react-navigation/native";
 import { Image } from "expo-image";
@@ -9,7 +9,17 @@ import { useRouter } from "expo-router";
 export default function productdetail() {
   const router = useRouter();
   const route = useRoute();
-  const { product } = route.params;
+  const { product } = route.params || {};
+
+  if (!product) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ fontSize: 18, textAlign: "center", marginTop: 50 }}>
+          Product details not available.
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

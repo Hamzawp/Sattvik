@@ -8,60 +8,37 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import Animated, { FadeIn, FadeInDown, ZoomIn } from "react-native-reanimated"; // Import animations
+import Animated, { ZoomIn } from "react-native-reanimated";
 import Header from "../../components/Header";
-import FontAwesome from "react-native-vector-icons/FontAwesome"; 
-
+import ImageSlider from "../../components/ImageSlider";
 import featureImage1 from "../../assets/images/feature1.jpg";
 import featureImage2 from "../../assets/images/feature2.png";
 import featureImage3 from "../../assets/images/feature3.jpeg";
 import featureImage4 from "../../assets/images/feature4.jpg";
-
-import bannerImage1 from "../../assets/images/banner1.jpeg";
-import bannerImage2 from "../../assets/images/banner2.jpg";
-import bannerImage3 from "../../assets/images/banner1.jpeg";
-import bannerImage4 from "../../assets/images/banner1.jpeg";
+import key_features from "../../assets/images/key_features.png";
+import core_values from "../../assets/images/core_values.png";
 import { Ionicons } from "@expo/vector-icons";
-
-const images = [
-  {
-    id: "1",
-    uri: bannerImage2,
-  },
-  {
-    id: "2",
-    uri: bannerImage1,
-  },
-  {
-    id: "3",
-    uri: bannerImage3,
-  },
-  {
-    id: "4",
-    uri: bannerImage4,
-  },
-];
 
 const featureImages = [
   {
     id: "1",
     uri: featureImage1,
-    title: "Scan Food"
+    title: "Scan Food",
   },
   {
     id: "2",
     uri: featureImage2,
-    title: "Ingredient Analyzer"
+    title: "Ingredient Analyzer",
   },
   {
     id: "3",
     uri: featureImage3,
-    title: "Allergy Tracker"
+    title: "Allergy Tracker",
   },
   {
     id: "4",
     uri: featureImage4,
-    title: "Import URL"
+    title: "Import URL",
   },
 ];
 
@@ -97,39 +74,14 @@ export default function Home() {
       </View>
 
       <View style={styles.slider_container}>
-        <Text style={styles.sectionTileSlider}>Hey there! 👏</Text>
-        <Text
-          style={{
-            fontSize: 22,
-            fontWeight: "600",
-            marginBottom: 20,
-            color: "#333",
-          }}
-        >
-          How you doing?{" "}
-        </Text>
-        <FlatList
-          data={images}
-          renderItem={({ item }) => (
-            <Animated.View
-              entering={FadeIn.duration(600).delay(parseInt(item.id) * 200)}
-              style={styles.image_slider_item}
-            >
-              <Image
-                style={styles.image_slider_image}
-                source={item.uri}
-              />
-            </Animated.View>
-          )}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          pagingEnabled
-        />
+        <ImageSlider />
       </View>
 
       <View style={styles.feature_cont}>
-        <Text style={styles.sectionTitle}>Features</Text>
+        <View style={styles.sectionTitleContainer}>
+          <Image source={key_features} style={styles.key_features_img} />
+          <Text style={styles.sectionTitle}>Key Features</Text>
+        </View>
         <View style={styles.feature_container}>
           {featureImages.map((item, index) => (
             <Animated.View
@@ -138,10 +90,7 @@ export default function Home() {
               style={styles.feature_item}
             >
               <TouchableOpacity style={styles.feature_img}>
-                <Image
-                  style={styles.feature_image}
-                  source={item.uri} 
-                />
+                <Image style={styles.feature_image} source={item.uri} />
                 <View style={styles.overlayTextContainer}>
                   <Text style={styles.overlayText}>{item.title}</Text>
                 </View>
@@ -152,7 +101,10 @@ export default function Home() {
       </View>
 
       <View style={styles.container}>
-      <Text style={styles.sectionTitle}>Features</Text>
+        <View style={styles.sectionTitleContainer}>
+          <Image source={core_values} style={styles.key_features_img} />
+          <Text style={styles.sectionTitle}>Core Capabilities</Text>
+        </View>
         <FlatList
           data={data}
           renderItem={({ item, index }) => (
@@ -184,8 +136,6 @@ export default function Home() {
   );
 }
 
-
-
 const styles = StyleSheet.create({
   scrollContainer: {
     flex: 1,
@@ -197,36 +147,31 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginHorizontal: 20,
   },
-  sectionTitle: {
-    fontSize: 21,
+  sectionTitleContainer: {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 10,
+    marginBottom: 20,
     marginTop: 20,
-    marginBottom: 15,
-    fontWeight: "600",
+  },
+  sectionTitle: {
+    fontSize: 20,
+    color: "#4cb3d0",
+    fontFamily: "Montserrat-bold"
   },
   sectionTileSlider: {
     fontSize: 18,
     marginTop: 20,
     marginBottom: 5,
-    fontWeight: "400",
+    fontFamily: "Montserrat-medium"
   },
-  image_slider_item: {
-    width: 300,
-    height: 200,
-    marginRight: 10,
-  },
-  image_slider_image: {
-    width: "100%",
-    height: "100%",
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.34,
-    shadowRadius: 6.27,
-    elevation: 10,
+  key_features_img: {
+    width: 35,
+    height: 35,
   },
   feature_cont: {
     margin: 20,
-    paddingBottom: 50,
   },
   feature_container: {
     display: "flex",
@@ -262,21 +207,21 @@ const styles = StyleSheet.create({
   overlayTextContainer: {
     position: "absolute",
     bottom: 10,
-    // left: "25%",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
-    paddingHorizontal: 5,
-    paddingVertical: 2,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
     borderRadius: 5,
   },
   overlayText: {
     color: "#fff",
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Montserrat-medium"
   },
   container: {
     flex: 1,
     justifyContent: "center",
     marginHorizontal: 20,
+    paddingBottom: 50,
   },
   flatlistContainer: {
     paddingVertical: 10,
@@ -300,8 +245,9 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 18,
     color: "#fff",
-    fontWeight: "bold",
+    fontFamily: "Montserrat-medium",
     marginBottom: 10,
+    marginTop: 15,
     textAlign: "center",
   },
   cardSubtitle: {
