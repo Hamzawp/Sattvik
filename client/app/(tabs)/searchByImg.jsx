@@ -15,20 +15,24 @@ export default function SearchByImg() {
   const [imageLink, setImageLink] = useState("");
   const [result, setResult] = useState(null);
 
-  const handleSearch = () => {
-    const sipJellyIngredients = {
-      ingredients: [
-        "Water",
-        "Sugar",
-        "Sodium Citrate",
-        "Citric Acid",
-        "Artificial Pineapple Flavor",
-        "Coloring (E102, E110)",
-      ],
-      isSafe: true,
-    };
+  const handleSearch = async () => {
+    try {
+      const response = await fetch("http://10.0.2.2:5000/process-url", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ url: imageLink }),
+      });
 
-    setResult(sipJellyIngredients);
+      const data = await response.json();
+      console.log(data);
+
+      setResult(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setResult({ result: "Error fetching data", unsafe_ingredients: {} });
+    }
   };
 
   return (
@@ -53,20 +57,31 @@ export default function SearchByImg() {
         <TouchableOpacity style={styles.analyzeBtn} onPress={handleSearch}>
           <Text style={styles.analyzeBtnText}>Analyze Url</Text>
         </TouchableOpacity>
-
         {result && (
           <View style={styles.resultContainer}>
-            <Text style={styles.resultTitle}>Ingredients:</Text>
-            {result.ingredients.map((ingredient, index) => (
-              <Text key={index} style={styles.resultContent}>
-                {ingredient}
-              </Text>
-            ))}
-            <Text style={styles.safetyStatus}>
-              {result.isSafe
-                ? "This product is safe."
-                : "This product is not safe."}
-            </Text>
+            {/* Display the main result message */}
+            <Text style={styles.resultTitle}>Result:</Text>
+            <Text style={styles.resultContent}>{result.result}</Text>
+
+            {/* Display unsafe ingredients, if any */}
+            {result.unsafe_ingredients &&
+              Object.keys(result.unsafe_ingredients).length > 0 && (
+                <View style={styles.unsafeIngredientsContainer}>
+                  <Text style={styles.resultTitle}>Unsafe Ingredients:</Text>
+                  {Object.entries(result.unsafe_ingredients).map(
+                    ([ingredient, description], index) => (
+                      <View key={index} style={styles.ingredientContainer}>
+                        <Text style={styles.ingredientName}>
+                          • {ingredient}
+                        </Text>
+                        <Text style={styles.ingredientDescription}>
+                          {description}
+                        </Text>
+                      </View>
+                    )
+                  )}
+                </View>
+              )}
           </View>
         )}
       </View>
@@ -122,28 +137,40 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   resultContainer: {
-    marginTop: 30,
+    marginTop: 10,
   },
   resultTitle: {
     fontSize: 20,
     fontFamily: "Montserrat-medium",
     marginBottom: 20,
+    marginTop: 20,
   },
   resultContent: {
     fontFamily: "Montserrat",
     fontSize: 15,
-  },
-  safetyStatus: {
-    marginTop: 20,
-    fontFamily: "Montserrat-bold",
-    textTransform: "uppercase",
-    fontSize: 20,
-    color: "green",
   },
   ImportImg: {
     width: "100%",
     height: 300,
     marginBottom: 30,
     borderRadius: 8,
+  },
+  unsafeIngredientsContainer: {
+    marginTop: 20,
+  },
+  ingredientContainer: {
+    marginBottom: 15,
+  },
+  ingredientName: {
+    fontSize: 18,
+    fontFamily: "Montserrat-medium",
+    color: "red",
+    marginBottom: 10,
+  },
+  ingredientDescription: {
+    fontSize: 14,
+    color: "black",
+    marginLeft: 10,
+    fontFamily: "Montserrat",
   },
 });
