@@ -1,81 +1,103 @@
-import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  ActivityIndicator,
-  Switch,
-  Modal,
   ScrollView,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+  ToastAndroid,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import React, { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import Header from "../../components/Header";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { db, storage } from "../../configs/FirebaseConfig";
+import { doc, setDoc } from "firebase/firestore";
 
 export default function UploadImg() {
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [report, setReport] = useState(null);
-  const [isPacked, setIsPacked] = useState(true);
-  const [showTooltip, setShowTooltip] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [response, setResponse] = useState(null);
-  const [isAnalyzedClicked, setIsAnalyzeClicked] = useState(false);
+  const [image, setImage] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null); // State to hold result
+  const [unsafeIngredients, setUnsafeIngredients] = useState(null); // State to hold unsafe ingredients
 
-  const packedImageUrl =
-    "https://c8.alamy.com/comp/BBRP29/ingredients-list-from-lotion-showing-the-ingredient-ethylenediaminetetraacetic-BBRP29.jpg";
-  const looseImageUrl =
-    "https://assets.bonappetit.com/photos/58a37e2309ffa8f718634793/master/w_1600%2Cc_limit/tangelo-citrus.jpg";
+  const onImagePick = async () => {
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 1,
+      });
 
-  useEffect(() => {
-    const checkFirstVisit = async () => {
-      const firstVisit = await AsyncStorage.getItem("firstVisit");
-      if (!firstVisit) {
-        setShowTooltip(true);
-        await AsyncStorage.setItem("firstVisit", "false");
+      if (!result.canceled) {
+        setImage(result.assets[0].uri);
       }
-    };
-    checkFirstVisit();
-  }, []);
-
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 1,
-    });
-
-    if (!result.cancelled) {
-      setSelectedImage(result.uri);
-      setResponse(null); // Clear previous response when a new image is selected
+    } catch (error) {
+      console.error("Error picking image:", error);
     }
   };
 
-  const analyzeImage = () => {
-    setIsAnalyzeClicked(true);
-    setIsLoading(true);
+  const onAddProduct = async () => {
+    if (!image) {
+      console.warn("No image selected");
+      return;
+    }
 
-    // Simulate analysis response
-    setTimeout(() => {
-      const mockReport = {
-        result: isPacked
-          ? "The Product is Not Recommended due to UNSAFE Ingredients."
-          : "The Product is 70% unadulterated.",
-        unsafe_ingredients: isPacked
-          ? {
-              "potassium sorbate":
-                "Potassium sorbate is the potassium salt of sorbic acid, chemical formula CH3CH=CH−CH=CH−CO2K. It is primarily used as a food preservative (E number 202).",
-              "sodium benzoate":
-                "Sodium benzoate is widely used as a food preservative (E211) and a pickling agent.",
-            }
-          : null,
-      };
-      setResponse(mockReport);
-      setIsLoading(false);
-    }, 1000);
+    setLoading(true);
+    const fileName = Date.now().toString() + ".jpg";
+
+    try {
+      const resp = await fetch(image);
+      const blob = await resp.blob();
+
+      const imageRef = ref(storage, "Sattvik/" + fileName);
+
+      await uploadBytes(imageRef, blob)
+        .then(async () => {
+          console.log("File uploaded");
+          const downloadUrl = await getDownloadURL(imageRef);
+          await saveProductDetail(downloadUrl);
+        })
+        .catch((error) => {
+          console.error("Error during upload or getting download URL:", error);
+        });
+    } catch (error) {
+      console.error("Error fetching or uploading image:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveProductDetail = async (imageUrl) => {
+    await setDoc(doc(db, "IngredientDetectorImage", Date.now().toString()), {
+      imageUrl: imageUrl,
+    });
+
+    // Call the endpoint after saving the product detail
+    fetchSimilarity(imageUrl);
+  };
+
+  const fetchSimilarity = async (imageUrl) => {
+    try {
+      const response = await fetch("http://10.0.2.2:5000/process-packedimage", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ image_url: imageUrl }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setResult(data.result);
+        setUnsafeIngredients(data.unsafe_ingredients);
+        ToastAndroid.show("New Product Added!", ToastAndroid.BOTTOM);
+      } else {
+        console.error("Failed to fetch similarity:", response.status);
+      }
+    } catch (error) {
+      console.error("Error calling the endpoint:", error);
+    }
   };
 
   return (
@@ -84,110 +106,69 @@ export default function UploadImg() {
       <View style={styles.uploadWindow}>
         <View style={styles.toggleContainer}>
           <Text style={styles.heading}>Upload an Image</Text>
-          <View style={styles.toggleBar}>
-            <Text>{isPacked ? "Packed" : "Loose"}</Text>
-            <Switch
-              value={isPacked}
-              onValueChange={() => {
-                setIsPacked(!isPacked);
-                setResponse(null); // Reset response on switch
-                setSelectedImage(null); // Clear selected image on switch
-              }}
-              trackColor={{ false: "#ccc", true: "#45b3cb" }}
-              thumbColor={isPacked ? "#fff" : "#fff"}
-            />
-            <TouchableOpacity onPress={() => setModalVisible(true)}>
-              <Ionicons name="information-circle" size={24} color="#45b3cb" />
-            </TouchableOpacity>
-          </View>
         </View>
-
-        {showTooltip && (
-          <Text style={styles.tooltip}>
-            Select the mode of product: Packed or Loose
-          </Text>
-        )}
 
         <Text style={styles.subtitle}>
           Take a picture or upload an image of your food item
         </Text>
-
-        <View style={styles.imageContainer}>
-          <Image
-            source={{
-              uri: selectedImage || (isPacked ? packedImageUrl : looseImageUrl),
-            }}
-            style={styles.image}
-          />
-        </View>
-
-        <TouchableOpacity style={styles.uploadBtn} onPress={pickImage}>
-          <Text style={styles.buttonText}>Choose Image</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.analyzeImageBtn} onPress={analyzeImage}>
-          <Text style={styles.buttonText}>Analyze Image</Text>
-        </TouchableOpacity>
-
-        {isLoading && (
-          <ActivityIndicator
-            size="large"
-            color="#0000ff"
-            style={styles.loadingGif}
-          />
-        )}
-
-        {response && response.result ? (
-          <View style={styles.reportContainer}>
-            <Text style={styles.reportHeading}>Product Report</Text>
-            {response.unsafe_ingredients &&
-              Object.entries(response.unsafe_ingredients).map(
-                ([name, description], index) => (
-                  <View key={index} style={styles.reportItem}>
-                    <Ionicons
-                      name="alert-circle"
-                      size={20}
-                      color="red"
-                      style={styles.bulletIcon}
-                    />
-                    <Text style={styles.reportText}>
-                      {name} - {description}
-                    </Text>
-                  </View>
-                )
-              )}
-            <Text style={styles.conclusionText}>{response.result}</Text>
-          </View>
-        ) : (
-          <View style={styles.notfoundContainer}>
-            <Text style={styles.notfound}>No Ingredients Found!</Text>
-          </View>
-        )}
       </View>
 
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalText}>
-              Your product is {isPacked ? "Packed" : "Loose"}.{"\n"}
-              {"\n"} If you select "Packed," the analysis will be based on the
-              packaging. For "Loose," ensure that the image clearly shows the
-              product.
-            </Text>
-            <TouchableOpacity
-              style={styles.modalCloseButton}
-              onPress={() => setModalVisible(false)}
+      <View style={styles.imageContainer}>
+        <TouchableOpacity onPress={() => onImagePick()}>
+          {!image ? (
+            <Image
+              source={require("../../assets/images/placeholder.png")}
+              style={{
+                width: 300,
+                height: 200,
+              }}
+            />
+          ) : (
+            <Image
+              source={{ uri: image }}
+              style={{
+                width: 300,
+                height: 200,
+                borderRadius: 15,
+              }}
+            />
+          )}
+        </TouchableOpacity>
+      </View>
+
+      <View style={{ marginHorizontal: 20, marginTop: 30 }}>
+        <TouchableOpacity
+          disabled={loading}
+          style={styles.analyzeImageBtn}
+          onPress={() => onAddProduct()}
+        >
+          {loading ? (
+            <ActivityIndicator color={"#fff"} size={"large"} />
+          ) : (
+            <Text
+              style={{
+                color: "#fff",
+                textAlign: "center",
+                fontFamily: "Montserrat-bold",
+                fontSize: 16,
+              }}
             >
-              <Text style={styles.modalCloseText}>Close</Text>
-            </TouchableOpacity>
-          </View>
+              Analyze Image
+            </Text>
+          )}
+        </TouchableOpacity>
+      </View>
+
+      {result && ( // Display result if available
+        <View style={styles.similarityContainer}>
+          <Text style={styles.similarityText}>{result}</Text>
+          {unsafeIngredients && Object.keys(unsafeIngredients).length > 0 && (
+            <Text style={styles.similarityText}>
+              Unsafe Ingredients: {Object.keys(unsafeIngredients).join(", ")}
+            </Text>
+          )}
         </View>
-      </Modal>
+      )}
     </ScrollView>
   );
 }
@@ -202,25 +183,6 @@ const styles = StyleSheet.create({
   uploadWindow: {
     padding: 20,
   },
-  notfoundContainer: {
-    marginTop: 10,
-    backgroundColor: "#f2eded",
-    borderWidth: 1,
-    borderColor: "red",
-    borderRadius: 10,
-    height: 250,
-    width: "100%", 
-    justifyContent: "center", 
-    alignItems: "center", 
-  },
-  notfound: {
-    color: "red",
-    padding: 20,
-    textAlign: "center",
-    textTransform: "uppercase",
-    letterSpacing: 2,
-    fontFamily: 'Montserrat-bold',
-  },
   toggleContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -229,29 +191,16 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 18,
-    fontFamily: 'Montserrat-bold',
-  },
-  toggleBar: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  tooltip: {
-    fontSize: 12,
-    fontFamily: 'Montserrat',
-    color: "#666",
-    marginBottom: 10,
-    backgroundColor: "#f0f0f0",
-    padding: 5,
-    borderRadius: 5,
+    fontFamily: "Montserrat-bold",
   },
   subtitle: {
     fontSize: 14,
     marginBottom: 20,
-    fontFamily: 'Montserrat-medium',
+    fontFamily: "Montserrat-medium",
   },
   imageContainer: {
-    width: "100%",
-    height: 200,
+    width: 370,
+    height: 250,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "#ccc",
@@ -259,36 +208,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
     position: "relative",
-  },
-  image: {
-    width: "100%",
-    height: "100%",
-    borderRadius: 10,
-  },
-  removeImageIcon: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    backgroundColor: "#fff",
-    borderRadius: 15,
-  },
-  placeholderText: {
-    color: "#aaa",
-    fontFamily: 'Montserrat',
-  },
-  buttonRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-  },
-  button: {
-    backgroundColor: "#45b3cb",
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    alignItems: "center",
-    flex: 1,
-    marginHorizontal: 5,
+    marginHorizontal: 20,
   },
   analyzeImageBtn: {
     backgroundColor: "#2196F3",
@@ -297,68 +217,15 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
   },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontFamily: 'Montserrat-bold',
-  },
-  loadingGif: {
-    marginVertical: 20,
-  },
-  reportContainer: {
+  similarityContainer: {
     marginTop: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    backgroundColor: "#fff",
-    borderRadius: 5,
+    marginHorizontal: 20,
+    alignItems: "center",
   },
-  reportHeading: {
+  similarityText: {
     fontSize: 18,
-    fontFamily: 'Montserrat-bold',
-    marginBottom: 20,
-  },
-  reportItem: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: 'center',
-    marginBottom: 5,
-  },
-  bulletIcon: {
-    marginRight: 15,
-  },
-  reportText: {
-    fontSize: 16,
-    fontFamily: 'Montserrat',
-    textAlign: 'justify',
-    width: '88%'
-  },
-  conclusionText: {
-    fontFamily: 'Montserrat-bold',
-    color: '#45b3cb',
-    marginTop: 20,
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContent: {
-    backgroundColor: "white",
-    fontFamily: 'Montserrat',
-    padding: 20,
-    borderRadius: 10,
-    width: "80%",
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center",
-    fontFamily: 'Montserrat',
-  },
-  closeModalButton: {
-    backgroundColor: "#2196F3",
-    paddingVertical: 10,
-    borderRadius: 5,
-    alignItems: "center",
+    fontFamily: "Montserrat-bold",
+    color: "#333",
+    textAlign: "center", 
   },
 });
