@@ -97,7 +97,7 @@ export default function Index() {
             marginBottom: 10,
           }}
         >
-          Stay Healthy with Sattvik
+          Stay Healthy with Sattvik!
         </Text>
         <Text
           style={{
