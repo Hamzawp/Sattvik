@@ -145,12 +145,12 @@ server
 
 ## Authors
 
-- Om Shete
 - Hamza Sayyed
   - [LinkedIn](https://shorturl.at/hjAEI)
+- Om Shete
 - Mohib Abbas Sayed
 - Parth Puranik
 
 ## License 📜
 
-[GPU License](https://github.com/Hamzawp/Sattvik/blob/main/LICENSE)
+[GPU License](https://github.com/Hamzawp/Sattvik/blob/main/LICENSE.txt)
