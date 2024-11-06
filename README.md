@@ -147,5 +147,10 @@ server
 
 - Om Shete
 - Hamza Sayyed
+  - [LinkedIn](https://shorturl.at/hjAEI)
 - Mohib Abbas Sayed
 - Parth Puranik
+
+## License 📜
+
+[GPU License](https://github.com/Hamzawp/Sattvik/blob/main/LICENSE)
